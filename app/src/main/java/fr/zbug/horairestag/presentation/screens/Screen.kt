@@ -7,5 +7,5 @@ sealed class Screen(
     val route: String
 ) {
     object NetworksList : Screen("networksList")
-    object LinesList : Screen("linesList")
+    object LinesList : Screen("linesList/{networkId}")
 }

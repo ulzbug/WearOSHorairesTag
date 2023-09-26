@@ -11,6 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.itemsIndexed
@@ -23,6 +25,7 @@ import fr.zbug.horairestag.R
 @Composable
 fun LinesListScreen(
     onNavigateToFriends: () -> Unit,
+    networkId:String?
     /*...*/
 ) {
 
@@ -43,7 +46,7 @@ fun LinesListScreen(
                 // When we have only primary label we can have up to 2 lines of text
                 label = {
                     Text(
-                        text = "Chrono $item"
+                        text = "$networkId $item"
                     )
                 },
                 icon = {
@@ -62,4 +65,10 @@ fun LinesListScreen(
             )
         }
     }
+}
+
+@Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
+@Composable
+fun LinesListPreview() {
+    LinesListScreen({}, "Tram")
 }

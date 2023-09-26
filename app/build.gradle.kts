@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "fr.zbug.horairestag"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "fr.zbug.horairestag"

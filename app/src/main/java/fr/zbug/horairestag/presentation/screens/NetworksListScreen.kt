@@ -3,7 +3,6 @@ package fr.zbug.horairestag.presentation.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
@@ -11,6 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.itemsIndexed
@@ -18,11 +19,10 @@ import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.CompactChip
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
-import fr.zbug.horairestag.R
 
 @Composable
 fun NetworksListScreen(
-    onNavigateToLinesList: () -> Unit,
+    onNavigateToLinesList: (String) -> Unit,
     /*...*/
 ) {
 
@@ -36,14 +36,14 @@ fun NetworksListScreen(
     ) {
         itemsIndexed(itemsIndexedList) { index, item ->
             CompactChip(
-                onClick = onNavigateToLinesList,
+                onClick = { onNavigateToLinesList(item) },
                 enabled = true,
                 modifier = Modifier
                     .width(140.dp),
                 // When we have only primary label we can have up to 2 lines of text
                 label = {
                     Text(
-                        text = "$item"
+                        text = item
                     )
                 },
 //                icon = {
@@ -62,4 +62,10 @@ fun NetworksListScreen(
             )
         }
     }
+}
+
+@Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
+@Composable
+fun NetworksListPreview() {
+    NetworksListScreen {}
 }

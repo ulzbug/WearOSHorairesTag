@@ -25,15 +25,15 @@ fun WearApp(navController: NavHostController) {
         ) {
             composable(Screen.NetworksList.route) {
                 NetworksListScreen(
-                    onNavigateToLinesList = { navController.navigate(Screen.LinesList.route) },
-                    /*...*/
+                    onNavigateToLinesList = fun(network: String) { navController.navigate("linesList/$network") },
                 )
             }
-            composable(Screen.LinesList.route) {
+            composable(Screen.LinesList.route) {backStackEntry ->
                 LinesListScreen(
-                    onNavigateToFriends = { navController.navigate("friendsList") },
-                    /*...*/
+                    onNavigateToFriends = { navController.navigate("friendsList") } ,
+                    backStackEntry.arguments?.getString("networkId")
                 )
+
             }
         }
     }
