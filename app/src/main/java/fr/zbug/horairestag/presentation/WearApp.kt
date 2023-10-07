@@ -6,19 +6,24 @@
 
 package fr.zbug.horairestag.presentation
 
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
+import fr.zbug.horairestag.data.Line
 import fr.zbug.horairestag.presentation.screens.LinesListScreen
 import fr.zbug.horairestag.presentation.screens.NetworksListScreen
 import fr.zbug.horairestag.presentation.screens.Screen
 import fr.zbug.horairestag.presentation.theme.HorairesTagTheme
+import java.net.URL
+import org.json.JSONArray
 
 @Composable
 fun WearApp(navController: NavHostController) {
     HorairesTagTheme {
-
         SwipeDismissableNavHost(
             navController = navController,
             startDestination = Screen.NetworksList.route,
@@ -30,8 +35,7 @@ fun WearApp(navController: NavHostController) {
             }
             composable(Screen.LinesList.route) {backStackEntry ->
                 LinesListScreen(
-                    onNavigateToFriends = { navController.navigate("friendsList") } ,
-                    backStackEntry.arguments?.getString("networkId")
+                    backStackEntry.arguments?.getString("networkId")?:""
                 )
 
             }
