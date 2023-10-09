@@ -24,9 +24,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.itemsIndexed
+import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.MaterialTheme
+import androidx.wear.compose.material.PositionIndicator
+import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import fr.zbug.horairestag.data.Network
 
@@ -42,35 +45,46 @@ fun NetworksListScreen(
         Network("Flexo", Icons.Rounded.DirectionsBus, Color(0xD5, 0x72, 0xA8, 255), Color.White, RectangleShape),
     )
 
-    ScalingLazyColumn(
-        modifier = Modifier.background(MaterialTheme.colors.background),
-    ) {
-        itemsIndexed(itemsIndexedList) { _, network ->
-            Chip(
-                onClick = { onNavigateToLinesList(network.name) },
-                enabled = true,
-                modifier = Modifier.fillMaxSize().height(35.dp),
-                // When we have only primary label we can have up to 2 lines of text
-                label = {
-                    Text(
-                        text = network.name
-                    )
-                },
-                icon = {
-                    Image(
-                        network.icone,
-                        contentDescription = network.name,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .size(ChipDefaults.IconSize)
-                            .wrapContentSize(align = Alignment.Center)
-                            .background(color = network.backgroundColor, shape = network.shape)
-                            .padding(4.dp),
-                        colorFilter = ColorFilter.tint(network.textColor)
-                    )
-                },
-                contentPadding = PaddingValues(horizontal = 20.dp),
+    val scalingLazyListState = rememberScalingLazyListState()
+
+    Scaffold(
+        positionIndicator = {
+            PositionIndicator(
+                scalingLazyListState = scalingLazyListState
             )
+        }
+    ) {
+        ScalingLazyColumn(
+            state = scalingLazyListState,
+            modifier = Modifier.background(MaterialTheme.colors.background),
+        ) {
+            itemsIndexed(itemsIndexedList) { _, network ->
+                Chip(
+                    onClick = { onNavigateToLinesList(network.name) },
+                    enabled = true,
+                    modifier = Modifier.fillMaxSize().height(35.dp),
+                    // When we have only primary label we can have up to 2 lines of text
+                    label = {
+                        Text(
+                            text = network.name
+                        )
+                    },
+                    icon = {
+                        Image(
+                            network.icone,
+                            contentDescription = network.name,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .size(ChipDefaults.IconSize)
+                                .wrapContentSize(align = Alignment.Center)
+                                .background(color = network.backgroundColor, shape = network.shape)
+                                .padding(4.dp),
+                            colorFilter = ColorFilter.tint(network.textColor)
+                        )
+                    },
+                    contentPadding = PaddingValues(horizontal = 20.dp),
+                )
+            }
         }
     }
 }

@@ -9,4 +9,5 @@ sealed class Screen(
     object NetworksList : Screen("networksList")
     object LinesList : Screen("linesList/{networkId}")
     object ClustersList : Screen("clustersList/{lineId}")
+//    object ClustersList : Screen("clustersList/{lineId}")
 }
