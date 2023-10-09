@@ -11,9 +11,23 @@ data class Cluster(
     val city: String = "",
     val name: String = "",
     val visible: Boolean = true,
-    val lat: Float = 0F,
-    val lon: Float = 0F
-) {
+    val lat: Double = 0.0,
+    val lon: Double = 0.0
+)
 
+@Entity(primaryKeys = ["lineId", "clusterId"], tableName = "lines_clusters")
+data class LineCluster(
+    val lineId: String,
+    val clusterId: String,
+    var orderBy:Int
+)
 
-}
+//data class LinesWithClusters(
+//    @Embedded val line: Line,
+//    @Relation(
+//        parentColumn = "gtfsId",
+//        entityColumn = "id",
+//        associateBy = Junction(LineClusterCrossRef::class)
+//    )
+//    val clusters: List<Cluster>
+//)

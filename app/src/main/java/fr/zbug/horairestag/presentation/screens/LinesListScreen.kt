@@ -1,6 +1,5 @@
 package fr.zbug.horairestag.presentation.screens
 
-import android.app.Application
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,13 +25,12 @@ import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.CompactChip
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
-import fr.zbug.horairestag.HorairesTagApplication
-import fr.zbug.horairestag.data.Line
 
 
 @Composable
 fun LinesListScreen(
     networkId:String = "",
+    onNavigateToClustersList: (String) -> Unit,
     viewModel: LinesListViewModel = viewModel(factory = LinesListViewModel.factory),
     /*...*/
 ) {
@@ -47,7 +45,7 @@ fun LinesListScreen(
 //        Line( id = 5, gtfsId = "SEM:5", shortName = "C5"),
 //    )
 
-    Log.d("Pouet", linesList.toList().toString());
+//    Log.d("LinesListScreen", linesList.toList().toString());
 
     ScalingLazyColumn(
         modifier = Modifier
@@ -57,10 +55,9 @@ fun LinesListScreen(
     ) {
         itemsIndexed(linesList) { _, line ->
             CompactChip(
-                onClick = { /* Do something */ },
+                onClick = { onNavigateToClustersList(line.gtfsId) },
                 enabled = true,
-                modifier = Modifier
-                    .width(140.dp),
+                modifier = Modifier.width(140.dp),
                 // When we have only primary label we can have up to 2 lines of text
                 label = {
                     Text(
@@ -88,5 +85,5 @@ fun LinesListScreen(
 @Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
 @Composable
 fun LinesListPreview() {
-    LinesListScreen("Tram")
+    LinesListScreen("Tram", {})
 }

@@ -5,8 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "lines")
 data class Line(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey
     val gtfsId: String,
     val shortName: String = "",
     val longName: String = "",
@@ -14,7 +13,4 @@ data class Line(
     val textColor: String = "",
     val mode: String = "",
     val type: String = "",
-) {
-
-
-}
+)

@@ -5,10 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Line::class], version = 1, exportSchema = false)
+@Database(entities = [Line::class, Cluster::class, LineCluster::class], version = 1, exportSchema = false)
 abstract class HorairesTagDatabase : RoomDatabase() {
 
     abstract fun lineDao(): LineDao
+    abstract fun clusterDao(): ClusterDao
 
     companion object {
         @Volatile

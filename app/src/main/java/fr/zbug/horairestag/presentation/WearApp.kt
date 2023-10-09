@@ -14,6 +14,7 @@ import androidx.navigation.NavHostController
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import fr.zbug.horairestag.data.Line
+import fr.zbug.horairestag.presentation.screens.ClustersListScreen
 import fr.zbug.horairestag.presentation.screens.LinesListScreen
 import fr.zbug.horairestag.presentation.screens.NetworksListScreen
 import fr.zbug.horairestag.presentation.screens.Screen
@@ -35,9 +36,14 @@ fun WearApp(navController: NavHostController) {
             }
             composable(Screen.LinesList.route) {backStackEntry ->
                 LinesListScreen(
-                    backStackEntry.arguments?.getString("networkId")?:""
+                    backStackEntry.arguments?.getString("networkId")?:"",
+                    onNavigateToClustersList = fun(lineId: String) { navController.navigate("clustersList/$lineId") },
                 )
-
+            }
+            composable(Screen.ClustersList.route) {backStackEntry ->
+                ClustersListScreen(
+                    backStackEntry.arguments?.getString("lineId")?:""
+                )
             }
         }
     }
