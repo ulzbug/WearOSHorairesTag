@@ -13,7 +13,7 @@ import java.net.URL
 
 
 class LinesRepository(private val lineDao: LineDao) {
-    fun getLinesByType(type: String): Flow<List<Line>> {
+    suspend fun getLinesByType(type: String): List<Line> {
 
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
@@ -30,6 +30,7 @@ class LinesRepository(private val lineDao: LineDao) {
                 if(listOf("TRAM", "FLEXO", "PROXIMO", "CHRONO").contains(jsonType)) {
 //                    Log.d("LinesRepository", "Insertion d une ligne $json_type")
                     val line = Line(
+                        id = jsonLine.getString("id"),
                         gtfsId = jsonLine.getString("gtfsId"),
                         shortName = jsonLine.getString("shortName"),
                         longName = jsonLine.getString("longName"),
@@ -47,10 +48,6 @@ class LinesRepository(private val lineDao: LineDao) {
 
         return lineDao.getLineByType(type.uppercase())
     }
-
-    suspend fun deleteLine(line: Line) = lineDao.delete(line)
-
-    suspend fun updateLine(line: Line) = lineDao.update(line)
 }
 
 @Dao
@@ -58,18 +55,9 @@ interface LineDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertMultiple(items: List<Line>)
 
-    @Update
-    suspend fun update(item: Line)
-
-    @Delete
-    suspend fun delete(item: Line)
-
     @Query("SELECT * from lines WHERE type = :type")
-    fun getLineByType(type: String): Flow<List<Line>>
-
-    @Query("SELECT * from lines ORDER BY shortName ASC")
-    fun getAllLines(): Flow<List<Line>>
+    suspend fun getLineByType(type: String): List<Line>
 
     @Query("SELECT (SELECT COUNT(*) FROM lines) == 0")
-    fun isEmpty(): Boolean
+    suspend fun isEmpty(): Boolean
 }

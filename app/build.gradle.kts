@@ -73,6 +73,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     implementation("androidx.activity:activity-compose:1.5.1")
     implementation("androidx.wear.compose:compose-navigation:1.2.0")
+    implementation("androidx.compose.material:material-icons-extended:1.0.0")
 //    implementation("androidx.room:room-common:2.5.2")
 //    implementation("androidx.room:room-ktx:2.5.2")
 

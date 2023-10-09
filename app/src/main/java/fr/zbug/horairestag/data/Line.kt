@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "lines")
 data class Line(
     @PrimaryKey
+    val id: String,
     val gtfsId: String,
     val shortName: String = "",
     val longName: String = "",

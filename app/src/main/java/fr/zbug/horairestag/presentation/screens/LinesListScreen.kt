@@ -1,11 +1,10 @@
 package fr.zbug.horairestag.presentation.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -21,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.itemsIndexed
+import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
-import androidx.wear.compose.material.CompactChip
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 
@@ -34,18 +33,8 @@ fun LinesListScreen(
     viewModel: LinesListViewModel = viewModel(factory = LinesListViewModel.factory),
     /*...*/
 ) {
-
-    val linesList by viewModel.getLinesByType(networkId).collectAsState(emptyList())
-
-//    var itemsIndexedList : List<Line> = listOf(
-//        Line( id = 1, gtfsId = "SEM:1", shortName = "C1"),
-//        Line( id = 2, gtfsId = "SEM:2", shortName = "C2"),
-//        Line( id = 3, gtfsId = "SEM:3", shortName = "C3"),
-//        Line( id = 4, gtfsId = "SEM:4", shortName = "C4"),
-//        Line( id = 5, gtfsId = "SEM:5", shortName = "C5"),
-//    )
-
-//    Log.d("LinesListScreen", linesList.toList().toString());
+    viewModel.getLinesByType(networkId)
+    val linesList by viewModel.lines.collectAsState()
 
     ScalingLazyColumn(
         modifier = Modifier
@@ -54,10 +43,10 @@ fun LinesListScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         itemsIndexed(linesList) { _, line ->
-            CompactChip(
-                onClick = { onNavigateToClustersList(line.gtfsId) },
+            Chip(
+                onClick = { onNavigateToClustersList(line.id) },
                 enabled = true,
-                modifier = Modifier.width(140.dp),
+                modifier = Modifier.fillMaxSize().height(35.dp),
                 // When we have only primary label we can have up to 2 lines of text
                 label = {
                     Text(
