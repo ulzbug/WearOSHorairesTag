@@ -6,8 +6,11 @@
 
 package fr.zbug.horairestag.presentation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import fr.zbug.horairestag.presentation.screens.ClustersListScreen
@@ -20,35 +23,48 @@ import fr.zbug.horairestag.presentation.theme.HorairesTagTheme
 
 @Composable
 fun WearApp(navController: NavHostController) {
-    HorairesTagTheme {
+//    HorairesTagTheme {
         SwipeDismissableNavHost(
             navController = navController,
             startDestination = Screen.NetworksList.route,
         ) {
             composable(Screen.NetworksList.route) {
                 NetworksListScreen(
-                    onNavigateToLinesList = fun(network: String) { navController.navigate("linesList/$network") },
+                    onNavigateToLinesList = fun(network: String) { Log.d("WearApp", "onNavigateToLinesList"); navController.navigate("linesList/$network") },
                 )
             }
-            composable(Screen.LinesList.route) {backStackEntry ->
+            composable(
+                route = Screen.LinesList.route,
+                arguments = listOf(
+                    navArgument("networkId") { type = NavType.StringType }
+                )
+            ) {backStackEntry ->
                 LinesListScreen(
                     backStackEntry.arguments?.getString("networkId")?:"",
                     onNavigateToClustersList = fun(lineId: String) { navController.navigate("clustersList/$lineId") },
                 )
             }
-            composable(Screen.ClustersList.route) {backStackEntry ->
+            composable(
+                route = Screen.ClustersList.route,
+                arguments = listOf(
+                    navArgument("lineId") { type = NavType.StringType }
+                )
+            ) {backStackEntry ->
                 ClustersListScreen(
                     backStackEntry.arguments?.getString("lineId")?:"",
-                    onNavigateToSchedule = fun(lineId: String, clusterId: String) { navController.navigate("ScheduleScreen/$lineId/$clusterId") },
+                    onNavigateToSchedule = fun(lineId: String, clusterId: String) { navController.navigate("ScheduleScreen/$lineId/$clusterId/1") },
                 )
             }
-            composable(Screen.ScheduleScreen.route) {backStackEntry ->
-                ScheduleScreen(
-                    backStackEntry.arguments?.getString("lineId")?:"",
-                    backStackEntry.arguments?.getString("clusterId")?:"",
-                    1
+            composable(
+                route = Screen.ScheduleScreen.route,
+                arguments = listOf(
+                    navArgument("lineId") { type = NavType.StringType },
+                    navArgument("clusterId") { type = NavType.StringType },
+                    navArgument("direction") { type = NavType.IntType },
                 )
+            ) {backStackEntry ->
+                ScheduleScreen()
             }
         }
-    }
+//    }
 }

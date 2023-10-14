@@ -1,5 +1,6 @@
 package fr.zbug.horairestag.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
@@ -44,6 +45,8 @@ fun NetworksListScreen(
         Network("Proximo", Icons.Rounded.DirectionsBus, Color(0x33, 0xA4, 0x57, 255), Color.White, RectangleShape),
         Network("Flexo", Icons.Rounded.DirectionsBus, Color(0xD5, 0x72, 0xA8, 255), Color.White, RectangleShape),
     )
+
+    Log.d("NetworksListScreen", "Création du NetworksListScreen")
 
     val scalingLazyListState = rememberScalingLazyListState()
 

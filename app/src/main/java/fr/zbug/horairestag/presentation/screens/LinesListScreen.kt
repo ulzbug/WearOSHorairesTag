@@ -1,5 +1,6 @@
 package fr.zbug.horairestag.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +28,7 @@ import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
+import fr.zbug.horairestag.presentation.LoadingAnimation
 
 
 @Composable
@@ -36,9 +38,7 @@ fun LinesListScreen(
     viewModel: LinesListViewModel = viewModel(factory = LinesListViewModel.factory),
     /*...*/
 ) {
-    viewModel.getLinesByType(networkId)
-    val linesList by viewModel.lines.collectAsState()
-
+    Log.d("LinesListScreen", "Création du LinesListScreen")
     val scalingLazyListState = rememberScalingLazyListState()
 
     Scaffold(
@@ -48,42 +48,47 @@ fun LinesListScreen(
             )
         }
     ) {
-        ScalingLazyColumn(
-            state = scalingLazyListState,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            itemsIndexed(linesList) { _, line ->
-                Chip(
-                    onClick = { onNavigateToClustersList(line.id) },
-                    enabled = true,
-                    modifier = Modifier.fillMaxSize().height(35.dp),
-                    // When we have only primary label we can have up to 2 lines of text
-                    label = {
-                        Text(
-                            text = "$networkId ${line.shortName}"
-                        )
-                    },
-                    icon = {
-                        val shortName = line.shortName.lowercase()
-                        val context = LocalContext.current
-                        val resource = context.resources.getIdentifier(
-                            "icon_line_$shortName",
-                            "drawable",
-                            context.packageName
-                        )
-                        Image(
-                            painter = painterResource(id = resource),
-                            contentDescription = "Ligne",
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier
-                                .size(ChipDefaults.IconSize)
-                                .wrapContentSize(align = Alignment.Center),
-                        )
-                    }
-                )
+        val linesList by viewModel.lines.collectAsState()
+
+        if(linesList.isEmpty()) {
+            LoadingAnimation()
+        } else {
+            ScalingLazyColumn(
+                state = scalingLazyListState,
+                modifier = Modifier
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                itemsIndexed(linesList) { _, line ->
+                    Chip(
+                        onClick = { onNavigateToClustersList(line.id) },
+                        enabled = true,
+                        modifier = Modifier.fillMaxSize().height(35.dp),
+                        // When we have only primary label we can have up to 2 lines of text
+                        label = {
+                            Text(
+                                text = "$networkId ${line.shortName}"
+                            )
+                        },
+                        icon = {
+                            val shortName = line.shortName.lowercase()
+                            val context = LocalContext.current
+                            val resource = context.resources.getIdentifier(
+                                "icon_line_$shortName",
+                                "drawable",
+                                context.packageName
+                            )
+                            Image(
+                                painter = painterResource(id = resource),
+                                contentDescription = "Ligne",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .size(ChipDefaults.IconSize)
+                                    .wrapContentSize(align = Alignment.Center),
+                            )
+                        }
+                    )
+                }
             }
         }
     }

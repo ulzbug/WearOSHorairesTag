@@ -10,12 +10,12 @@ val Teal200 = Color(0xFF03DAC5)
 val Red400 = Color(0xFFCF6679)
 
 internal val wearColorPalette: Colors = Colors(
-    primary = Purple200,
-    primaryVariant = Purple700,
-    secondary = Teal200,
-    secondaryVariant = Teal200,
-    error = Red400,
-    onPrimary = Color.Black,
-    onSecondary = Color.Black,
-    onError = Color.Black
+    primary = Color(0xFFFFB951),
+    primaryVariant = Color(0xFF633F00),
+    secondary = Color(0xFFDDC2A1),
+    secondaryVariant = Color(0xFF56442A),
+    error = Color(0xFFFFB4AB),
+    onPrimary = Color(0xFF452B00),
+    onSecondary = Color(0xFF3E2D16),
+    onError = Color(0xFF690005)
 )

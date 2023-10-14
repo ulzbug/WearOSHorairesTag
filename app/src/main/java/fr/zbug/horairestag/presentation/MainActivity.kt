@@ -7,6 +7,7 @@
 package fr.zbug.horairestag.presentation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
@@ -19,12 +20,16 @@ class MainActivity : ComponentActivity() {
     private lateinit var navController: NavHostController
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("MainActivity", "Démarrage de l'application")
+
         super.onCreate(savedInstanceState)
         setContent {
             navController = rememberSwipeDismissableNavController()
 
             WearApp(navController)
         }
+
+        Log.d("MainActivity", "Fin du démarrage de l'application")
     }
 }
 

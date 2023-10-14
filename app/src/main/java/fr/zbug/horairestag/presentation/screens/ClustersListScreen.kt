@@ -21,6 +21,7 @@ import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
+import fr.zbug.horairestag.presentation.LoadingAnimation
 
 @Composable
 fun ClustersListScreen(
@@ -29,9 +30,6 @@ fun ClustersListScreen(
     viewModel: ClustersListViewModel = viewModel(factory = ClustersListViewModel.factory),
     /*...*/
 ) {
-    viewModel.getClusters(lineId)
-    val clusterList by viewModel.clusters.collectAsState()
-
     val scalingLazyListState = rememberScalingLazyListState()
 
     Scaffold(
@@ -41,26 +39,30 @@ fun ClustersListScreen(
             )
         }
     ) {
-        ScalingLazyColumn(
-            state = scalingLazyListState,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background),
-        ) {
-            itemsIndexed(clusterList) { _, cluster ->
-                Chip(
-                    onClick = { onNavigateToSchedule(lineId, cluster.code) },
-                    enabled = true,
-                    modifier = Modifier.fillMaxSize().height(35.dp),
-                    // When we have only primary label we can have up to 2 lines of text
-                    label = {
-                        Text(
-                            text = cluster.name,
-                            fontSize = 10.sp,
-                            textAlign = TextAlign.Center
-                        )
-                    },
-                )
+        val clusterList by viewModel.clusters.collectAsState()
+        if(clusterList.isEmpty()) {
+            LoadingAnimation()
+        } else {
+            ScalingLazyColumn(
+                state = scalingLazyListState,
+                modifier = Modifier
+                    .fillMaxSize(),
+            ) {
+                itemsIndexed(clusterList) { _, cluster ->
+                    Chip(
+                        onClick = { onNavigateToSchedule(lineId, cluster.code) },
+                        enabled = true,
+                        modifier = Modifier.fillMaxSize().height(35.dp),
+                        // When we have only primary label we can have up to 2 lines of text
+                        label = {
+                            Text(
+                                text = cluster.name,
+                                fontSize = 10.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        },
+                    )
+                }
             }
         }
     }
