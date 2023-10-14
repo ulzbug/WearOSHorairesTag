@@ -1,6 +1,5 @@
 package fr.zbug.horairestag.presentation.screens
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -26,10 +25,12 @@ import androidx.wear.compose.material.Text
 @Composable
 fun ClustersListScreen(
     lineId:String = "",
+    onNavigateToSchedule: (String, String) -> Unit,
     viewModel: ClustersListViewModel = viewModel(factory = ClustersListViewModel.factory),
     /*...*/
 ) {
-    val clusterList by viewModel.getClusters(lineId).collectAsState(emptyList())
+    viewModel.getClusters(lineId)
+    val clusterList by viewModel.clusters.collectAsState()
 
     val scalingLazyListState = rememberScalingLazyListState()
 
@@ -48,7 +49,7 @@ fun ClustersListScreen(
         ) {
             itemsIndexed(clusterList) { _, cluster ->
                 Chip(
-                    onClick = { /* Do something */ },
+                    onClick = { onNavigateToSchedule(lineId, cluster.code) },
                     enabled = true,
                     modifier = Modifier.fillMaxSize().height(35.dp),
                     // When we have only primary label we can have up to 2 lines of text
@@ -68,5 +69,5 @@ fun ClustersListScreen(
 @Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
 @Composable
 fun ClustersListPreview() {
-    ClustersListScreen("SEM:A")
+    ClustersListScreen("SEM:A", fun(_: String, _: String) { })
 }

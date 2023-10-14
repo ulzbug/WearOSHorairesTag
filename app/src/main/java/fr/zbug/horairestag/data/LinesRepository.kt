@@ -48,12 +48,17 @@ class LinesRepository(private val lineDao: LineDao) {
 
         return lineDao.getLineByType(type.uppercase())
     }
+
+    suspend fun getLine(id: String): Line = lineDao.getLine(id)
 }
 
 @Dao
 interface LineDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertMultiple(items: List<Line>)
+
+    @Query("SELECT * from lines WHERE id = :id")
+    suspend fun getLine(id: String): Line
 
     @Query("SELECT * from lines WHERE type = :type")
     suspend fun getLineByType(type: String): List<Line>

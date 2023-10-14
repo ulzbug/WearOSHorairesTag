@@ -6,7 +6,9 @@ import androidx.room.PrimaryKey
 
 @Entity(indices = [Index(value = ["lineId", "clusterId", "date"])], tableName = "schedules")
 data class Schedule(
-    val lineId: String,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val lineId: String = "",
     val clusterId: String = "",
     val direction: Int = 0,
     val stopEndId: String = "",

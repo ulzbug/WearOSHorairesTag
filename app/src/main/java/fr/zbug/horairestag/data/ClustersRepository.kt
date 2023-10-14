@@ -12,11 +12,7 @@ import java.net.URL
 
 
 class ClustersRepository(private val clusterDao: ClusterDao) {
-    fun getClusters(lineId: String): Flow<List<Cluster>> {
-        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-
-        StrictMode.setThreadPolicy(policy)
-
+    suspend fun getClusters(lineId: String): List<Cluster> {
         if(clusterDao.isEmpty(lineId)) {
             Log.d("ClustersRepository", "URL : https://data.mobilites-m.fr/api/routers/default/index/routes/$lineId/clusters")
 
@@ -52,18 +48,23 @@ class ClustersRepository(private val clusterDao: ClusterDao) {
 
         return clusterDao.getClusters2(lineId.uppercase())
     }
+
+    suspend fun getCluster(id: String): Cluster = clusterDao.getCluster(id)
 }
 
 @Dao
 interface ClusterDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(cluster: Cluster)
+    suspend fun insert(cluster: Cluster)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertMultiple(cluster: List<Cluster>)
+    suspend fun insertMultiple(cluster: List<Cluster>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertLineCluster(lineClusterList: List<LineCluster>)
+    suspend fun insertLineCluster(lineClusterList: List<LineCluster>)
+
+    @Query("SELECT * from clusters WHERE code = :id")
+    suspend fun getCluster(id: String): Cluster
 
     @Query(
         "SELECT clusters.* " +
@@ -71,8 +72,8 @@ interface ClusterDao {
         "WHERE clusters.id = lines_clusters.clusterId AND lines_clusters.lineId = :lineId " +
         "ORDER BY orderBy"
     )
-    fun getClusters2(lineId: String): Flow<List<Cluster>>
+    suspend fun getClusters2(lineId: String): List<Cluster>
 
     @Query("SELECT (SELECT COUNT(*) FROM lines_clusters WHERE lineId = :lineId) == 0")
-    fun isEmpty(lineId: String): Boolean
+    suspend fun isEmpty(lineId: String): Boolean
 }
