@@ -20,7 +20,6 @@ abstract class HorairesTagDatabase : RoomDatabase() {
             // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, HorairesTagDatabase::class.java, "horaires_tag_database")
-                    .allowMainThreadQueries() // TODO : remove pour gérer en asynchrone
                     .build().also { Instance = it }
             }
         }

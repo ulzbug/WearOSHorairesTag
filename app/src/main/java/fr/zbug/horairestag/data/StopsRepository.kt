@@ -1,13 +1,9 @@
 package fr.zbug.horairestag.data
 
-import android.os.StrictMode
-import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
 import java.net.URL
 import java.time.LocalDate
@@ -21,53 +17,7 @@ class StopsRepository(private val stopDao: StopDao, private val clusterDao: Clus
 
     private suspend fun createStops() {
         if(stopDao.isStopsEmpty()) {
-            val repoListJsonStr = URL("https://data.mobilites-m.fr/api/points/json?types=stops%2Cclusters").readText()
-            val jsonObj = JSONObject(repoListJsonStr).getJSONArray("features")
-
-            val clusters = ArrayList<Cluster>()
-            val stops = ArrayList<Stop>()
-
-            for (i in 0 until jsonObj.length()) {
-                val jsonCluster = jsonObj.getJSONObject(i)
-                val properties = jsonCluster.getJSONObject("properties")
-                val coords = jsonCluster.getJSONObject("geometry").getJSONArray("coordinates")
-                if(properties.getString("type") == "clusters") {
-                    val cluster = Cluster(
-                        id = properties.getString("id"),
-                        code = properties.getString("code"),
-                        city = properties.getString("city"),
-                        name = properties.getString("name"),
-                        visible = properties.getString("visible") == "true",
-                        lat = coords.getDouble(0),
-                        lon = coords.getDouble(1)
-                    )
-                    clusters.add(cluster)
-
-                    if(clusters.size > 1000) {
-                        clusterDao.insertMultiple(clusters)
-                        clusters.clear()
-                    }
-
-                } else if(properties.getString("type") == "stops") {
-                    val stop = Stop(
-                        gtfsId = properties.getString("id"),
-                        city = properties.getString("city"),
-                        name = properties.getString("name"),
-                        lat = coords.getDouble(0),
-                        lon = coords.getDouble(1),
-                        clusterGtfsId = properties.getString("clusterGtfsId")
-                    )
-                    stops.add(stop)
-
-                    if(stops.size > 1000) {
-                        stopDao.insertMultipleStops(stops)
-                        stops.clear()
-                    }
-                }
-
-                clusterDao.insertMultiple(clusters)
-                stopDao.insertMultipleStops(stops)
-            }
+            TagRepository().getStops(stopDao, clusterDao)
         }
     }
 

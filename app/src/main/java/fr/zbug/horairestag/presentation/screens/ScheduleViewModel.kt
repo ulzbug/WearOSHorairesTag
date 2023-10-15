@@ -74,7 +74,10 @@ class ScheduleViewModel (
                                 stopsRepository.getSchedules(lineId, clusterId, direction)
                             if (schedules.value.size > 0) {
                                 Log.d("ScheduleViewModel", schedules.value[0].stopEndId)
-                                _stopDirection.value = stopsRepository.getStop(schedules.value[0].stopEndId)
+                                val stop = stopsRepository.getStop(schedules.value[0].stopEndId)
+                                if(stop != null) {
+                                    _stopDirection.value = stop
+                                }
                             }
                         } catch (e : Exception) {
                             if(e.message != null) {

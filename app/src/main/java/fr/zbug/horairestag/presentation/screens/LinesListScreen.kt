@@ -24,7 +24,6 @@ import androidx.wear.compose.foundation.lazy.itemsIndexed
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
-import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
@@ -63,30 +62,33 @@ fun LinesListScreen(
                     Chip(
                         onClick = { onNavigateToClustersList(line.id) },
                         enabled = true,
-                        modifier = Modifier.fillMaxSize().height(35.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .height(35.dp),
                         // When we have only primary label we can have up to 2 lines of text
                         label = {
                             Text(
                                 text = "$networkId ${line.shortName}"
                             )
                         },
-                        icon = {
-                            val shortName = line.shortName.lowercase()
-                            val context = LocalContext.current
-                            val resource = context.resources.getIdentifier(
-                                "icon_line_$shortName",
-                                "drawable",
-                                context.packageName
-                            )
-                            Image(
-                                painter = painterResource(id = resource),
-                                contentDescription = "Ligne",
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                                    .size(ChipDefaults.IconSize)
-                                    .wrapContentSize(align = Alignment.Center),
-                            )
-                        }
+                        icon = { line.getIcon() }
+//                        icon = {
+//                            val shortName = line.shortName.lowercase()
+//                            val context = LocalContext.current
+//                            val resource = context.resources.getIdentifier(
+//                                "icon_line_$shortName",
+//                                "drawable",
+//                                context.packageName
+//                            )
+//                            Image(
+//                                painter = painterResource(id = resource),
+//                                contentDescription = "Ligne",
+//                                contentScale = ContentScale.Fit,
+//                                modifier = Modifier
+//                                    .size(ChipDefaults.IconSize)
+//                                    .wrapContentSize(align = Alignment.Center),
+//                            )
+//                        }
                     )
                 }
             }

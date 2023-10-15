@@ -1,7 +1,6 @@
 package fr.zbug.horairestag.presentation.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.SwapVert
@@ -28,7 +26,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
@@ -108,23 +105,8 @@ fun ScheduleScreen(
                         .padding(start = 20.dp, end = 15.dp)
                         .padding(top = 35.dp), horizontalArrangement = Arrangement.Center
                 ) {
-//                    Box(Modifier.width(30.dp)) {
-                        Text(
-                            text = line.shortName,
-                            modifier = Modifier
-                                .background(color = Color.Yellow, shape = CircleShape)
-                                .padding(2.dp),
-                            color = Color.Black,
-                        )
-//                    }
-//                    Box(
-//                        Modifier
-//                            .width(IntrinsicSize.Max)
-//                            .weight(1f)
-//                    ) {
-
-                        Text(cluster.name, fontSize = 12.sp, modifier = Modifier.padding(start = 2.dp))
-//                    }
+                    line.getIcon()
+                    Text(cluster.name, fontSize = 12.sp, modifier = Modifier.padding(start = 2.dp))
                 }
 
                 // Affichade de la direction
@@ -138,17 +120,17 @@ fun ScheduleScreen(
                         Icons.Rounded.ArrowForward,
                         contentDescription = "Direction",
                         modifier = Modifier
-                            .size(ChipDefaults.IconSize)
+                            .size(20.dp)
                             .padding(1.dp),
                         colorFilter = ColorFilter.tint(Color.White)
                     )
 
-                    Text(stopDirection.name, fontSize = 13.sp)
+                    Text(stopDirection.name, fontSize = 12.sp)
                     Image(
                         Icons.Rounded.SwapVert,
                         contentDescription = "Change Direction",
                         modifier = Modifier
-                            .size(ChipDefaults.IconSize)
+                            .size(20.dp)
                             .padding(1.dp)
                             .clickable { onNavigateToOtherDirection(line.id, cluster.code, if(schedules[0].direction == 1) 2 else 1 ) },
                         colorFilter = ColorFilter.tint(Color.White),
