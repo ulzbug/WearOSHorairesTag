@@ -52,7 +52,9 @@ fun WearApp(navController: NavHostController) {
             ) {backStackEntry ->
                 ClustersListScreen(
                     backStackEntry.arguments?.getString("lineId")?:"",
-                    onNavigateToSchedule = fun(lineId: String, clusterId: String) { navController.navigate("ScheduleScreen/$lineId/$clusterId/1") },
+                    onNavigateToSchedule = fun(lineId: String, clusterId: String) {
+                        navController.navigate("ScheduleScreen/$lineId/$clusterId/1")
+                    },
                 )
             }
             composable(
@@ -63,7 +65,13 @@ fun WearApp(navController: NavHostController) {
                     navArgument("direction") { type = NavType.IntType },
                 )
             ) {backStackEntry ->
-                ScheduleScreen()
+                ScheduleScreen(
+                    onNavigateToOtherDirection = fun(lineId: String, clusterId: String, direction: Int) {
+                        navController.navigate("ScheduleScreen/$lineId/$clusterId/$direction") {
+                            popUpTo(Screen.ClustersList.route)
+                        }
+                    },
+                )
             }
         }
     }

@@ -73,8 +73,8 @@ class ScheduleViewModel (
                             _schedules.value =
                                 stopsRepository.getSchedules(lineId, clusterId, direction)
                             if (schedules.value.size > 0) {
-                                _stopDirection.value =
-                                    stopsRepository.getStop(schedules.value[0].stopEndId)
+                                Log.d("ScheduleViewModel", schedules.value[0].stopEndId)
+                                _stopDirection.value = stopsRepository.getStop(schedules.value[0].stopEndId)
                             }
                         } catch (e : Exception) {
                             if(e.message != null) {
