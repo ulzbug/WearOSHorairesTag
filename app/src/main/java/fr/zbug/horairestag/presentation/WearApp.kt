@@ -23,7 +23,7 @@ import fr.zbug.horairestag.presentation.theme.HorairesTagTheme
 
 @Composable
 fun WearApp(navController: NavHostController) {
-//    HorairesTagTheme {
+    HorairesTagTheme {
         SwipeDismissableNavHost(
             navController = navController,
             startDestination = Screen.NetworksList.route,
@@ -66,5 +66,5 @@ fun WearApp(navController: NavHostController) {
                 ScheduleScreen()
             }
         }
-//    }
+    }
 }

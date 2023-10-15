@@ -14,6 +14,7 @@ import fr.zbug.horairestag.data.ClustersRepository
 import fr.zbug.horairestag.data.Line
 import fr.zbug.horairestag.data.LinesRepository
 import fr.zbug.horairestag.data.Schedule
+import fr.zbug.horairestag.data.Stop
 import fr.zbug.horairestag.data.StopsRepository
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -47,45 +48,45 @@ class ScheduleViewModel (
         private val _schedules = MutableStateFlow(ArrayList<Schedule>())
         val schedules: StateFlow<ArrayList<Schedule>> = _schedules.asStateFlow()
 
-        init {
-            Log.d("ScheduleViewModel", "init")
+        private val _stopDirection = MutableStateFlow(Stop(""))
+        val stopDirection: StateFlow<Stop> = _stopDirection.asStateFlow()
 
+        private val _error = MutableStateFlow("")
+        val error: StateFlow<String> = _error.asStateFlow()
+
+        init {
             viewModelScope.launch {
                 coroutineScope {
                     launch {
                         Log.d("ScheduleViewModel", "getLine")
-                        getLine()
-                        Log.d("ScheduleViewModel", "getLine OK")
+                        _line.value = linesRepository.getLine(lineId)
+                        Log.d("ScheduleViewModel", "getLine end")
                     }
                     launch {
                         Log.d("ScheduleViewModel", "getCluster")
-                        getCluster()
-                        Log.d("ScheduleViewModel", "getCluster OK")
+                        _cluster.value = clustersRepository.getCluster(clusterId)
+                        Log.d("ScheduleViewModel", "getCluster end")
                     }
                     launch {
                         Log.d("ScheduleViewModel", "getSchedules")
-                        getSchedules()
-                        Log.d("ScheduleViewModel", "getSchedules OK")
+                        try {
+                            _schedules.value =
+                                stopsRepository.getSchedules(lineId, clusterId, direction)
+                            if (schedules.value.size > 0) {
+                                _stopDirection.value =
+                                    stopsRepository.getStop(schedules.value[0].stopEndId)
+                            }
+                        } catch (e : Exception) {
+                            if(e.message != null) {
+                                _error.value = checkNotNull(e.message)
+                            }
+                        }
+                        Log.d("ScheduleViewModel", "getSchedules end")
                     }
                 }
-                Log.d("ScheduleViewModel", "init loaded")
                 _loaded.value = true
             }
-        }
-
-        private suspend fun getLine() {
-            _line.value = linesRepository.getLine(lineId)
-        }
-
-        private suspend fun getCluster() {
-            val cluster = clustersRepository.getCluster(clusterId)
-            _cluster.value = cluster
-        }
-
-        private suspend fun getSchedules() {
-            val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-            val date = LocalDate.now().format(formatter)
-            _schedules.value = stopsRepository.getSchedules(lineId, clusterId, date, direction)
+            Log.d("ScheduleViewModel", "init end")
         }
 
         companion object {

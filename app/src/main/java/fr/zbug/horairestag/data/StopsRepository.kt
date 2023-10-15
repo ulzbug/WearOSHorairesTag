@@ -11,17 +11,15 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.net.URL
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
 
 
 class StopsRepository(private val stopDao: StopDao, private val clusterDao: ClusterDao) {
-    private suspend fun createStops() {
-        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-        StrictMode.setThreadPolicy(policy)
+    suspend fun getStop(id: String): Stop = stopDao.getStop(id)
 
+    private suspend fun createStops() {
         if(stopDao.isStopsEmpty()) {
             val repoListJsonStr = URL("https://data.mobilites-m.fr/api/points/json?types=stops%2Cclusters").readText()
             val jsonObj = JSONObject(repoListJsonStr).getJSONArray("features")
@@ -73,54 +71,48 @@ class StopsRepository(private val stopDao: StopDao, private val clusterDao: Clus
         }
     }
 
-    suspend fun getSchedules(lineId:String, clusterId:String, date:String, direction:Int) : ArrayList<Schedule> {
+    private suspend fun getSchedulesByDate(lineId:String, clusterId:String, direction:Int, date:String, time:Int) : ArrayList<Schedule> {
         if(stopDao.isSchedulesEmpty(lineId, clusterId, date)) {
             this.createStops()
 
-            val schedules = ArrayList<Schedule>()
+            var schedules = TagRepository().getSchedules(lineId, clusterId, date)
 
-            Log.d("StopsRepository:getSchedules", "https://data.mobilites-m.fr/api/routers/default/index/clusters/$clusterId/stoptimes/$date?route=$lineId");
-            val repoListJsonStr = URL("https://data.mobilites-m.fr/api/routers/default/index/clusters/$clusterId/stoptimes/$date?route=$lineId").readText()
-            try {
-                val patterns = JSONArray(repoListJsonStr)
-                for (i in 0 until patterns.length()) {
-                    val pattern = patterns.getJSONObject(i).getJSONObject("pattern")
-                    val times = patterns.getJSONObject(i).getJSONArray("times")
+            val insertSchedules = ArrayList<Schedule>()
+            for (schedule in schedules) {
+                insertSchedules.add(schedule)
 
-                    for (j in 0 until times.length()) {
-                        val time = times.getJSONObject(j)
-
-                        schedules.add(
-                            Schedule(
-                                lineId = lineId,
-                                clusterId = clusterId,
-                                direction = pattern.getInt("dir"),
-                                stopEndId = pattern.getString("lastStop"),
-                                date = date,
-                                hour = time.getInt("scheduledDeparture")
-                            )
-                        )
-
-                        if (schedules.size > 1000) {
-                            stopDao.insertMultipleSchedule(schedules)
-                            schedules.clear()
-                        }
-                    }
+                if (insertSchedules.size > 1000) {
+                    stopDao.insertMultipleSchedule(schedules)
+                    schedules.clear()
                 }
-                stopDao.insertMultipleSchedule(schedules)
-            } catch (e: JSONException) {
-                val error = e.message
-                Log.d("StopsRepository:getSchedules", "Erreur parsing Json : $error / $repoListJsonStr")
             }
+            stopDao.insertMultipleSchedule(insertSchedules)
         }
+        return ArrayList(stopDao.getNextSchedules(lineId, clusterId, date, time, direction))
+    }
+
+    suspend fun getSchedules(lineId:String, clusterId:String, direction:Int) : ArrayList<Schedule> {
+
+        val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+        val date = LocalDate.now().format(formatter)
 
         val currentDateTimeFR = Date().toInstant().atZone(ZoneId.of("Europe/Paris"))
         val hours = currentDateTimeFR.format(DateTimeFormatter.ofPattern("H")).toInt()
         val minutes = currentDateTimeFR.format(DateTimeFormatter.ofPattern("m")).toInt()
         val secondes = currentDateTimeFR.format(DateTimeFormatter.ofPattern("s")).toInt()
-        val currentTime = hours * 3600 + minutes * 60 + secondes
+        var currentTime = hours * 3600 + minutes * 60 + secondes
 
-        return ArrayList(stopDao.getNextSchedules(lineId, clusterId, date, currentTime, direction))
+        var schedules = getSchedulesByDate(lineId, clusterId, direction, date, currentTime)
+        if(schedules.isEmpty()) {
+            val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+            val date = LocalDate.now().plusDays(1).format(formatter)
+
+            var currentTime = 0
+
+            schedules = getSchedulesByDate(lineId, clusterId, direction, date, currentTime)
+        }
+
+        return schedules
     }
 }
 
@@ -131,6 +123,9 @@ interface StopDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMultipleStops(stops: List<Stop>)
+
+    @Query("SELECT * from stops WHERE gtfsId = :id")
+    suspend fun getStop(id: String): Stop
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSchedule(schedule: Schedule)

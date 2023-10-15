@@ -1,6 +1,5 @@
 package fr.zbug.horairestag.presentation.screens
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,8 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -29,7 +26,7 @@ import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import fr.zbug.horairestag.presentation.LoadingAnimation
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
@@ -47,9 +44,11 @@ fun ScheduleScreen(
         }
     ) {
         val loaded by viewModel.loaded.collectAsState()
-        val line by viewModel.line.collectAsState()
-        val cluster by viewModel.cluster.collectAsState()
         val schedules by viewModel.schedules.collectAsState()
+        val error by viewModel.error.collectAsState()
+
+        val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+        val today = LocalDate.now().format(formatter).toInt()
 
         val date = Date()
         val currentDateTimeFR = date.toInstant().atZone(ZoneId.of("Europe/Paris"))
@@ -62,17 +61,29 @@ fun ScheduleScreen(
         var arrival2 = "-"
         var arrival3 = "-"
         if(schedules.size > 0) {
-            NextArrival = ((schedules[0].hour - currentTime) / 60).toString()
+            NextArrival = ((schedules[0].hour - currentTime) / 60 + (schedules[0].date.toInt() - today) * (1440 - currentTime / 60)).toString()
         }
-        if(schedules.size > 0) {
-            arrival2 = ((schedules[1].hour - currentTime) / 60).toString()
+        if(schedules.size > 1) {
+            arrival2 = ((schedules[1].hour - currentTime) / 60 + (schedules[1].date.toInt() - today) * (1440 - currentTime / 60)).toString()
         }
-        if(schedules.size > 0) {
-            arrival3 = ((schedules[2].hour - currentTime) / 60).toString()
+        if(schedules.size > 2) {
+            arrival3 = ((schedules[2].hour - currentTime) / 60 + (schedules[2].date.toInt() - today) * (1440 - currentTime / 60)).toString()
         }
 
         if(!loaded) {
             LoadingAnimation()
+        } else if(error != "") {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize().padding(5.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = error,
+                    fontSize = 12.sp
+                )
+            }
         } else {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -85,6 +96,7 @@ fun ScheduleScreen(
                         .padding(top = 35.dp), horizontalArrangement = Arrangement.Center
                 ) {
                     Box(Modifier.width(30.dp)) {
+                        val line by viewModel.line.collectAsState()
                         Text(
                             text = line.shortName,
                             modifier = Modifier
@@ -98,6 +110,7 @@ fun ScheduleScreen(
                             .width(110.dp)
                             .padding(start = 2.dp)
                     ) {
+                        val cluster by viewModel.cluster.collectAsState()
                         Text(cluster.name, fontSize = 13.sp)
                     }
                 }
@@ -143,8 +156,16 @@ fun ScheduleScreen(
     }
 }
 
-@Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
-@Composable
-fun ScheduleScreenPreview() {
-    ScheduleScreen()
-}
+//@Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
+//@Composable
+//fun ScheduleScreenPreview() {
+//    val database = HorairesTagApplication().database
+//    ScheduleScreen(
+//    viewModel = ScheduleViewModel(
+//            ClustersRepository(database.clusterDao()),
+//            LinesRepository(database.lineDao()),
+//            StopsRepository(database.stopDao(), database.clusterDao()),
+//            SavedStateHandle()
+//        )
+//    )
+//}
